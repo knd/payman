@@ -12,14 +12,14 @@ go build
 ```
 ### Linux
 ```
-wget https://github.com/DefinitelyNotAGoat/payman/releases/download/v1.0.4/payman_linux_amd64
+wget https://github.com/DefinitelyNotAGoat/payman/releases/download/v1.0.6/payman_linux_amd64
 sudo mv payman_linux_amd64 /usr/local/bin/payman
 sudo chmod a+x /usr/local/bin/payman
 ```
 
 ### MacOS
 ```
-wget https://github.com/DefinitelyNotAGoat/payman/releases/download/v1.0.4/payman_darwin_amd64
+wget https://github.com/DefinitelyNotAGoat/payman/releases/download/v1.0.6/payman_darwin_amd64
 sudo mv payman_linux_amd64 /usr/local/bin/payman
 sudo chmod a+x /usr/local/bin/payman
 
