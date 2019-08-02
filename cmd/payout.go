@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 
+	gotezos "github.com/DefinitelyNotAGoat/go-tezos"
 	"github.com/DefinitelyNotAGoat/payman/reddit"
 	"github.com/DefinitelyNotAGoat/payman/twitter"
 
@@ -13,7 +14,6 @@ import (
 	"github.com/DefinitelyNotAGoat/payman/reporting"
 	"github.com/DefinitelyNotAGoat/payman/server"
 
-	goTezos "github.com/DefinitelyNotAGoat/go-tezos"
 	"github.com/spf13/cobra"
 )
 
@@ -80,7 +80,7 @@ func newPayoutCommand() *cobra.Command {
 				reporter.Log(fmt.Sprintf("could not open file for reporting: %v\n", err))
 			}
 
-			gt, err := goTezos.NewGoTezos(conf.URL)
+			gt, err := gotezos.NewGoTezos(conf.URL)
 			if err != nil {
 				reporter.Log(fmt.Sprintf("could not connect to network: %v\n", err))
 			}

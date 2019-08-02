@@ -6,6 +6,7 @@ import (
 	"os"
 
 	goTezos "github.com/DefinitelyNotAGoat/go-tezos"
+	"github.com/DefinitelyNotAGoat/go-tezos/account"
 	"github.com/DefinitelyNotAGoat/payman/options"
 	pay "github.com/DefinitelyNotAGoat/payman/payer"
 	"github.com/DefinitelyNotAGoat/payman/reporting"
@@ -58,7 +59,7 @@ func newReportCommand() *cobra.Command {
 			}
 			conf.Dry = true
 
-			wallet := goTezos.Wallet{}
+			wallet := account.Wallet{}
 			payer := pay.NewPayer(gt, wallet, &conf)
 			payouts, _, err := payer.Payout()
 			if err != nil {

@@ -9,7 +9,8 @@ import (
 
 	"encoding/csv"
 
-	goTezos "github.com/DefinitelyNotAGoat/go-tezos"
+	"github.com/DefinitelyNotAGoat/go-tezos/account"
+	"github.com/DefinitelyNotAGoat/go-tezos/delegate"
 	"github.com/olekukonko/tablewriter"
 )
 
@@ -36,7 +37,7 @@ func NewReporter(general *log.Logger) (Reporter, error) {
 }
 
 // PrintPaymentsTable takes in payments and prints them to a table for general logging
-func (r *Reporter) PrintPaymentsTable(payments goTezos.DelegateReport) {
+func (r *Reporter) PrintPaymentsTable(payments delegate.DelegateReport) {
 	total := []string{}
 	data := r.formatData(payments)
 	if len(data) > 0 {
@@ -55,7 +56,7 @@ func (r *Reporter) PrintPaymentsTable(payments goTezos.DelegateReport) {
 }
 
 // formatData parses payments into a double array of data for table or csv printing
-func (r *Reporter) formatData(payments goTezos.DelegateReport) [][]string {
+func (r *Reporter) formatData(payments delegate.DelegateReport) [][]string {
 	var data [][]string
 	var totalNet float64
 	var totalGross float64
@@ -64,11 +65,11 @@ func (r *Reporter) formatData(payments goTezos.DelegateReport) [][]string {
 		share := payment.Share * 100
 		strShare := fmt.Sprintf("%.6f", share)
 		fee, _ := strconv.Atoi(payment.Fee)
-		floatFee := float64(fee) / float64(goTezos.MUTEZ)
+		floatFee := float64(fee) / float64(account.MUTEZ)
 		gross, _ := strconv.Atoi(payment.GrossRewards)
-		floatGross := float64(gross) / float64(goTezos.MUTEZ)
+		floatGross := float64(gross) / float64(account.MUTEZ)
 		net, _ := strconv.Atoi(payment.NetRewards)
-		floatNet := float64(net) / float64(goTezos.MUTEZ)
+		floatNet := float64(net) / float64(account.MUTEZ)
 
 		totalNet = totalNet + floatNet
 		totalGross = totalGross + floatGross
@@ -80,7 +81,7 @@ func (r *Reporter) formatData(payments goTezos.DelegateReport) [][]string {
 }
 
 // WriteCSVReport writes payments to a csv file for reporting
-func (r *Reporter) WriteCSVReport(payments goTezos.DelegateReport) {
+func (r *Reporter) WriteCSVReport(payments delegate.DelegateReport) {
 	data := r.formatData(payments)
 	if r.report != nil {
 		for _, value := range data {

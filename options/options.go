@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	goTezos "github.com/DefinitelyNotAGoat/go-tezos"
+	"github.com/DefinitelyNotAGoat/go-tezos/delegate"
 )
 
 // Options is a struct to represent configuration options for payman
@@ -33,23 +33,23 @@ type Options struct {
 //PaymentsOverride is a configuration option to override the payments calculation with your own
 type PaymentsOverride struct {
 	File     string
-	Payments []goTezos.Payment
+	Payments []delegate.Payment
 }
 
 // ReadPaymentsOverride generates the Payment Struct for the payer
-func (p *PaymentsOverride) ReadPaymentsOverride() ([]goTezos.Payment, error) {
+func (p *PaymentsOverride) ReadPaymentsOverride() ([]delegate.Payment, error) {
 	jsonFile, err := os.Open(p.File)
 	if err != nil {
-		return []goTezos.Payment{}, err
+		return []delegate.Payment{}, err
 	}
 	defer jsonFile.Close()
 
 	byteValue, err := ioutil.ReadAll(jsonFile)
 	if err != nil {
-		return []goTezos.Payment{}, err
+		return []delegate.Payment{}, err
 	}
 
-	var payments []goTezos.Payment
+	var payments []delegate.Payment
 	err = json.Unmarshal(byteValue, &payments)
 	if err != nil {
 		return payments, err

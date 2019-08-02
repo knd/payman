@@ -4,13 +4,15 @@ import (
 	"strconv"
 
 	goTezos "github.com/DefinitelyNotAGoat/go-tezos"
+	"github.com/DefinitelyNotAGoat/go-tezos/account"
+	"github.com/DefinitelyNotAGoat/go-tezos/delegate"
 	"github.com/DefinitelyNotAGoat/payman/options"
 )
 
 // Payer is a structure to represent pay operations
 type Payer struct {
 	gt     *goTezos.GoTezos
-	wallet goTezos.Wallet
+	wallet account.Wallet
 	conf   *options.Options
 }
 
@@ -40,14 +42,14 @@ type Node struct {
 }
 
 // NewPayer returns is a contructor for Payer
-func NewPayer(gt *goTezos.GoTezos, wallet goTezos.Wallet, conf *options.Options) Payer {
+func NewPayer(gt *goTezos.GoTezos, wallet account.Wallet, conf *options.Options) Payer {
 	return Payer{gt: gt, wallet: wallet, conf: conf}
 }
 
 // Payout uses the payers configuration that calls it, to pay out for the cycle in the conf
-func (payer *Payer) Payout() (goTezos.DelegateReport, [][]byte, error) {
-	var payments []goTezos.Payment
-	rewards := &goTezos.DelegateReport{}
+func (payer *Payer) Payout() (delegate.DelegateReport, [][]byte, error) {
+	var payments []delegate.Payment
+	rewards := &delegate.DelegateReport{}
 
 	if len(payer.conf.PaymentsOverride.Payments) > 0 {
 		payments = payer.conf.PaymentsOverride.Payments
@@ -61,7 +63,7 @@ func (payer *Payer) Payout() (goTezos.DelegateReport, [][]byte, error) {
 		payments = rewards.GetPayments(payer.conf.PaymentMinimum)
 	}
 
-	var delegations []goTezos.DelegationReport
+	var delegations []delegate.DelegationReport
 	for _, delegation := range rewards.Delegations {
 		intNet, _ := strconv.Atoi(delegation.NetRewards)
 		if intNet >= payer.conf.PaymentMinimum {
@@ -73,7 +75,7 @@ func (payer *Payer) Payout() (goTezos.DelegateReport, [][]byte, error) {
 
 	responses := [][]byte{}
 	if !payer.conf.Dry {
-		ops, err := payer.gt.Operation.CreateBatchPayment(payments, payer.wallet, payer.conf.NetworkFee, payer.conf.NetworkGasLimit)
+		ops, err := payer.gt.Operation.CreateBatchPayment(payments, payer.wallet, payer.conf.NetworkFee, payer.conf.NetworkGasLimit, 100)
 		if err != nil {
 			return *rewards, nil, err
 		}

@@ -5,6 +5,7 @@ import (
 	"time"
 
 	goTezos "github.com/DefinitelyNotAGoat/go-tezos"
+	"github.com/DefinitelyNotAGoat/go-tezos/account"
 	"github.com/DefinitelyNotAGoat/payman/options"
 	pay "github.com/DefinitelyNotAGoat/payman/payer"
 	"github.com/DefinitelyNotAGoat/payman/reddit"
@@ -15,7 +16,7 @@ import (
 // PayoutServer is structure representing a payout server
 type PayoutServer struct {
 	gt       *goTezos.GoTezos
-	wallet   goTezos.Wallet
+	wallet   account.Wallet
 	reporter reporting.Reporter
 	rbot     *reddit.Bot
 	tbot     *twitter.Bot
@@ -23,7 +24,7 @@ type PayoutServer struct {
 }
 
 // NewPayoutServer contructs a new payout server
-func NewPayoutServer(gt *goTezos.GoTezos, wallet goTezos.Wallet, reporter reporting.Reporter, rbot *reddit.Bot, tbot *twitter.Bot, conf *options.Options) PayoutServer {
+func NewPayoutServer(gt *goTezos.GoTezos, wallet account.Wallet, reporter reporting.Reporter, rbot *reddit.Bot, tbot *twitter.Bot, conf *options.Options) PayoutServer {
 	return PayoutServer{
 		gt:       gt,
 		wallet:   wallet,
