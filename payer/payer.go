@@ -55,7 +55,8 @@ func (payer *Payer) Payout() (delegate.DelegateReport, [][]byte, error) {
 		payments = payer.conf.PaymentsOverride.Payments
 	} else {
 		var err error
-		rewards, err = payer.gt.Delegate.GetReport(payer.conf.Delegate, payer.conf.Cycle, float64(payer.conf.Fee))
+		rewards, err = payer.gt.Delegate.GetReport(payer.conf.Delegate, payer.conf.Cycle, float64(payer.conf.Fee), false)
+
 		if err != nil {
 			return *rewards, nil, err
 		}
