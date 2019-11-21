@@ -1,8 +1,7 @@
-package reporting
+package print
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"strconv"
 	"time"
@@ -14,38 +13,16 @@ import (
 	"github.com/olekukonko/tablewriter"
 )
 
-// Reporter is a structer that contains a general logger and a csv writer for payout reports
-type Reporter struct {
-	general *log.Logger
-	report  *csv.Writer
-}
-
-// Log uses the genral logger and writes the message
-func (r *Reporter) Log(msg interface{}) {
-	r.general.Println(msg)
-}
-
-// NewReporter creates a new reporter for general logging and payout reports (csv)
-func NewReporter(general *log.Logger) (Reporter, error) {
-	r := Reporter{general: general}
-	report, err := r.getCSVWriter()
-	if err != nil {
-		return r, err
-	}
-	r.report = report
-	return r, nil
-}
-
-// PrintPaymentsTable takes in payments and prints them to a table for general logging
-func (r *Reporter) PrintPaymentsTable(payments delegate.DelegateReport) {
+// ReportTable takes in payments and prints them to a table for general logging
+func ReportTable(report delegate.DelegateReport) {
 	total := []string{}
-	data := r.formatData(payments)
+	data := formatData(report)
 	if len(data) > 0 {
 		total = data[len(data)-1]
 		data = data[:len(data)-1]
 	}
 
-	table := tablewriter.NewWriter(r.general.Writer())
+	table := tablewriter.NewWriter(&writer{})
 	table.SetHeader([]string{"Address", "Share", "Gross", "Fee", "Net"})
 	table.SetFooter(total)
 
@@ -56,12 +33,12 @@ func (r *Reporter) PrintPaymentsTable(payments delegate.DelegateReport) {
 }
 
 // formatData parses payments into a double array of data for table or csv printing
-func (r *Reporter) formatData(payments delegate.DelegateReport) [][]string {
+func formatData(report delegate.DelegateReport) [][]string {
 	var data [][]string
 	var totalNet float64
 	var totalGross float64
 	var totalFee float64
-	for _, payment := range payments.Delegations {
+	for _, payment := range report.Delegations {
 		share := payment.Share * 100
 		strShare := fmt.Sprintf("%.6f", share)
 		fee, _ := strconv.Atoi(payment.Fee)
@@ -80,21 +57,25 @@ func (r *Reporter) formatData(payments delegate.DelegateReport) [][]string {
 	return data
 }
 
-// WriteCSVReport writes payments to a csv file for reporting
-func (r *Reporter) WriteCSVReport(payments delegate.DelegateReport) {
-	data := r.formatData(payments)
-	if r.report != nil {
-		for _, value := range data {
-			r.report.Write(value)
-		}
+// WriteCSV writes payments to a csv file for reporting
+func WriteCSV(payments delegate.DelegateReport) error {
+	r, err := getCSVWriter()
+	if err != nil {
+		return err
 	}
-	r.report.Flush()
+
+	data := formatData(payments)
+	for _, value := range data {
+		r.Write(value)
+	}
+	r.Flush()
+	return nil
 }
 
 // getCSVWriter opens a file with the current date for its name and
 // returns a csv.Writer for that file
-func (r *Reporter) getCSVWriter() (*csv.Writer, error) {
-	fileName := r.buildFileName()
+func getCSVWriter() (*csv.Writer, error) {
+	fileName := buildFileName()
 	f, err := os.Create(fileName)
 	if err != nil {
 		return nil, err
@@ -105,6 +86,13 @@ func (r *Reporter) getCSVWriter() (*csv.Writer, error) {
 
 // buildFileName returns a string that represents a filename based
 // of the current date
-func (r *Reporter) buildFileName() string {
+func buildFileName() string {
 	return time.Now().Format(time.RFC3339) + ".csv"
+}
+
+type writer struct{}
+
+func (w *writer) Write(p []byte) (n int, err error) {
+	fmt.Println(string(p))
+	return len(p), nil
 }

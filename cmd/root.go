@@ -1,6 +1,9 @@
 package cmd
 
 import (
+	"github.com/DefinitelyNotAGoat/payman/cmd/batch"
+	"github.com/DefinitelyNotAGoat/payman/cmd/payout"
+	"github.com/DefinitelyNotAGoat/payman/cmd/report"
 	"github.com/spf13/cobra"
 )
 
@@ -11,8 +14,9 @@ func newRootCommand() *cobra.Command {
 	}
 
 	rootCommand.AddCommand(
-		newPayoutCommand(),
-		newReportCommand(),
+		batch.NewCommand(),
+		payout.NewCommand(),
+		report.NewCommand(),
 	)
 
 	return rootCommand
